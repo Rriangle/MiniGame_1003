@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
 using GameSpace.Areas.MiniGame.Models;
 using GameSpace.Areas.MiniGame.Models.ViewModels;
+using GameSpace.Areas.MiniGame.Models.Settings;
 using GameSpace.Areas.MiniGame.Services;
 using GameSpace.Areas.social_hub.Auth;
 using GameSpace.Models;
@@ -618,6 +620,277 @@ namespace GameSpace.Areas.MiniGame.Controllers
             catch (Exception ex)
             {
                 return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        /// <summary>
+        /// 系統規則設定頁面
+        /// </summary>
+        public async Task<IActionResult> SystemRules()
+        {
+            try
+            {
+                // 獲取寵物等級經驗設定
+                var levelExperienceSettings = await _context.PetLevelExperienceSettings
+                    .AsNoTracking()
+                    .OrderBy(s => s.Level)
+                    .ToListAsync();
+
+                // 獲取寵物升級規則
+                var levelUpRules = await _context.PetLevelUpRules
+                    .AsNoTracking()
+                    .ToListAsync();
+
+                // 獲取寵物互動獎勵規則
+                var interactionBonusRules = await _context.PetInteractionBonusRules
+                    .AsNoTracking()
+                    .ToListAsync();
+
+                // 獲取寵物顏色選項
+                var colorOptions = await _context.PetColorOptions
+                    .AsNoTracking()
+                    .Where(c => c.IsActive)
+                    .OrderBy(c => c.DisplayOrder)
+                    .ToListAsync();
+
+                // 獲取寵物背景選項
+                var backgroundOptions = await _context.PetBackgroundOptions
+                    .AsNoTracking()
+                    .Where(b => b.IsActive)
+                    .OrderBy(b => b.DisplayOrder)
+                    .ToListAsync();
+
+                // 獲取寵物換色所需點數設定
+                var skinColorCostSettings = await _context.PetSkinColorCostSettings
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync();
+
+                // 獲取寵物換背景所需點數設定
+                var backgroundCostSettings = await _context.PetBackgroundCostSettings
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync();
+
+                var model = new PetSystemRulesViewModel
+                {
+                    LevelExperienceSettings = levelExperienceSettings,
+                    LevelUpRules = levelUpRules,
+                    InteractionBonusRules = interactionBonusRules,
+                    ColorOptions = colorOptions,
+                    BackgroundOptions = backgroundOptions,
+                    SkinColorCostSettings = skinColorCostSettings,
+                    BackgroundCostSettings = backgroundCostSettings
+                };
+
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = $"載入系統規則設定時發生錯誤：{ex.Message}";
+                return View(new PetSystemRulesViewModel());
+            }
+        }
+
+        /// <summary>
+        /// 會員個別寵物設定
+        /// </summary>
+        public async Task<IActionResult> IndividualSettings(int? id)
+        {
+            try
+            {
+                if (id == null)
+                {
+                    return NotFound();
+                }
+
+                var pet = await _context.Pets
+                    .AsNoTracking()
+                    .Include(p => p.User)
+                    .FirstOrDefaultAsync(p => p.PetId == id);
+
+                if (pet == null)
+                {
+                    return NotFound();
+                }
+
+                // 獲取可用的顏色選項
+                var colorOptions = await _context.PetColorOptions
+                    .AsNoTracking()
+                    .Where(c => c.IsActive)
+                    .OrderBy(c => c.DisplayOrder)
+                    .ToListAsync();
+
+                // 獲取可用的背景選項
+                var backgroundOptions = await _context.PetBackgroundOptions
+                    .AsNoTracking()
+                    .Where(b => b.IsActive)
+                    .OrderBy(b => b.DisplayOrder)
+                    .ToListAsync();
+
+                var model = new PetIndividualSettingsViewModel
+                {
+                    PetId = pet.PetId,
+                    UserId = pet.UserId,
+                    UserName = pet.User.UserName,
+                    PetName = pet.PetName,
+                    CurrentSkinColor = pet.SkinColor,
+                    CurrentBackground = pet.Background,
+                    ColorOptions = colorOptions,
+                    BackgroundOptions = backgroundOptions
+                };
+
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = $"載入寵物設定時發生錯誤：{ex.Message}";
+                return RedirectToAction("Index");
+            }
+        }
+
+        /// <summary>
+        /// 會員個別寵物清單與查詢
+        /// </summary>
+        public async Task<IActionResult> QueryPets(string searchTerm = "", string sortBy = "name", int page = 1, int pageSize = 20)
+        {
+            try
+            {
+                var query = _context.Pets
+                    .AsNoTracking()
+                    .Include(p => p.User)
+                    .AsQueryable();
+
+                // 搜尋功能
+                if (!string.IsNullOrEmpty(searchTerm))
+                {
+                    if (int.TryParse(searchTerm, out int userId))
+                    {
+                        query = query.Where(p => p.UserId == userId);
+                    }
+                    else
+                    {
+                        query = query.Where(p => p.PetName.Contains(searchTerm) || p.User.UserName.Contains(searchTerm));
+                    }
+                }
+
+                // 排序
+                query = sortBy switch
+                {
+                    "level" => query.OrderByDescending(p => p.Level),
+                    "experience" => query.OrderByDescending(p => p.Experience),
+                    "user" => query.OrderBy(p => p.User.UserName),
+                    _ => query.OrderBy(p => p.PetName)
+                };
+
+                // 分頁
+                var totalCount = await query.CountAsync();
+                var pets = await query
+                    .Skip((page - 1) * pageSize)
+                    .Take(pageSize)
+                    .Select(p => new PetQueryRecord
+                    {
+                        PetId = p.PetId,
+                        UserId = p.UserId,
+                        UserName = p.User.UserName,
+                        PetName = p.PetName,
+                        Level = p.Level,
+                        Experience = p.Experience,
+                        SkinColor = p.SkinColor,
+                        Background = p.Background,
+                        Happiness = p.Happiness,
+                        Health = p.Health,
+                        Hunger = p.Hunger,
+                        Energy = p.Energy,
+                        Intelligence = p.Intelligence
+                    })
+                    .ToListAsync();
+
+                var model = new PetQueryViewModel
+                {
+                    SearchTerm = searchTerm,
+                    SortBy = sortBy,
+                    Page = page,
+                    PageSize = pageSize,
+                    TotalCount = totalCount,
+                    Pets = pets
+                };
+
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = $"載入寵物清單時發生錯誤：{ex.Message}";
+                return View(new PetQueryViewModel());
+            }
+        }
+
+        /// <summary>
+        /// 換膚色/背景紀錄
+        /// </summary>
+        public async Task<IActionResult> ColorChangeHistory(int? userId = null, DateTime? startDate = null, DateTime? endDate = null, int page = 1, int pageSize = 20, string changeType = "skin")
+        {
+            try
+            {
+                var query = _context.WalletHistories
+                    .AsNoTracking()
+                    .Include(h => h.User)
+                    .Where(h => h.ChangeType == (changeType == "skin" ? "寵物換膚色" : "寵物換背景"))
+                    .AsQueryable();
+
+                // 使用者篩選
+                if (userId.HasValue)
+                {
+                    query = query.Where(h => h.UserId == userId.Value);
+                }
+
+                // 日期篩選
+                if (startDate.HasValue)
+                {
+                    query = query.Where(h => h.ChangeTime >= startDate.Value);
+                }
+
+                if (endDate.HasValue)
+                {
+                    query = query.Where(h => h.ChangeTime <= endDate.Value);
+                }
+
+                // 排序
+                query = query.OrderByDescending(h => h.ChangeTime);
+
+                // 分頁
+                var totalCount = await query.CountAsync();
+                var records = await query
+                    .Skip((page - 1) * pageSize)
+                    .Take(pageSize)
+                    .Select(h => new ColorChangeRecord
+                    {
+                        LogId = h.LogId,
+                        UserId = h.UserId,
+                        UserName = h.User.UserName,
+                        ChangeType = h.ChangeType,
+                        ChangeTime = h.ChangeTime,
+                        PointsChange = h.PointsChange,
+                        Description = h.Description
+                    })
+                    .ToListAsync();
+
+                var model = new ColorChangeHistoryViewModel
+                {
+                    UserId = userId,
+                    StartDate = startDate,
+                    EndDate = endDate,
+                    ChangeType = changeType,
+                    Page = page,
+                    PageSize = pageSize,
+                    TotalCount = totalCount,
+                    Records = records
+                };
+
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = $"載入換色紀錄時發生錯誤：{ex.Message}";
+                return View(new ColorChangeHistoryViewModel());
             }
         }
     }
