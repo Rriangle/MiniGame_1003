@@ -1,0 +1,148 @@
+﻿@model GameSpace.Areas.MiniGame.Models.ViewModels.AdminSignInRulesViewModel
+@{
+    ViewData["Title"] = "ñ��W�h�]�w";
+}
+
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">ñ��W�h�]�w</h1>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <!-- ñ��W�h�]�w��� -->
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">ñ��W�h�]�w</h6>
+                </div>
+                <div class="card-body">
+                    <form method="post" asp-action="SetRule">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="name">�W�h�W��</label>
+                                    <input type="text" class="form-control" id="name" name="name" 
+                                           value="@Model.SignInRule.Name" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="pointsReward">�I�Ƽ��y</label>
+                                    <input type="number" class="form-control" id="pointsReward" name="pointsReward" 
+                                           value="@Model.SignInRule.PointsReward" min="1" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="consecutiveDays">�s��ñ��Ѽ�</label>
+                                    <input type="number" class="form-control" id="consecutiveDays" name="consecutiveDays" 
+                                           value="@Model.SignInRule.ConsecutiveDays" min="1" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="isActive">�O�_�ҥ�</label>
+                                    <select class="form-control" id="isActive" name="isActive">
+                                        <option value="true" selected="@(Model.SignInRule.IsActive ? "selected" : null)">�ҥ�</option>
+                                        <option value="false" selected="@(!Model.SignInRule.IsActive ? "selected" : null)">����</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> �x�s�]�w
+                            </button>
+                            <a href="@Url.Action("Index", "AdminSignInStats")" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left"></i> ��^�C��
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- �W�h���� -->
+        <div class="col-lg-4">
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">�W�h����</h6>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <h6><i class="fas fa-info-circle"></i> �]�w����</h6>
+                        <ul class="mb-0">
+                            <li><strong>�W�h�W�١G</strong>�Ω��ѧO��ñ��W�h</li>
+                            <li><strong>�I�Ƽ��y�G</strong>�C��ñ��i��o���I��</li>
+                            <li><strong>�s��ñ��ѼơG</strong>�F�즹�Ѽƥi��o�B�~���y</li>
+                            <li><strong>�O�_�ҥΡG</strong>����W�h�O�_�ͮ�</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ��e�W�h���A -->
+    <div class="row mt-4">
+        <div class="col-lg-12">
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">��e�W�h���A</h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered" width="100%" cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th>�W�h�W��</th>
+                                    <th>�I�Ƽ��y</th>
+                                    <th>�s��ñ��Ѽ�</th>
+                                    <th>���A</th>
+                                    <th>�̫��s�ɶ�</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>@Model.SignInRule.Name</td>
+                                    <td class="text-success font-weight-bold">@Model.SignInRule.PointsReward</td>
+                                    <td>@Model.SignInRule.ConsecutiveDays</td>
+                                    <td>
+                                        @if (Model.SignInRule.IsActive)
+                                        {
+                                            <span class="badge badge-success">�ҥ�</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge badge-danger">����</span>
+                                        }
+                                    </td>
+                                    <td>@DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

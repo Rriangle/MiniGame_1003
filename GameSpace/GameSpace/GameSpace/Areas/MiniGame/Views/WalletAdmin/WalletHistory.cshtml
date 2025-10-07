@@ -1,0 +1,115 @@
+﻿@model GameSpace.Areas.MiniGame.Models.ViewModels.WalletHistoryViewModel
+@{
+    ViewData["Title"] = "查看會員收支明細";
+}
+
+@await Html.PartialAsync("_MiniGameAdminTabs")
+
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-secondary text-white">
+        <h5 class="mb-0"><i class="fas fa-history me-2"></i>會員收支明細</h5>
+    </div>
+    <div class="card-body">
+        <form method="get" class="row g-3 align-items-end">
+            <div class="col-md-2">
+                <label class="form-label" for="Query_UserId">會員ID</label>
+                <input class="form-control" id="Query_UserId" name="UserId" type="number" value="@(Model.Query.UserId ?? null)" />
+            </div>
+            <div class="col-md-2">
+                <label class="form-label" for="Query_ChangeType">變更類型</label>
+                <input class="form-control" id="Query_ChangeType" name="ChangeType" value="@(Model.Query.ChangeType ?? string.Empty)" />
+            </div>
+            <div class="col-md-2">
+                <label class="form-label" for="Query_StartDate">起始日期</label>
+                <input class="form-control" id="Query_StartDate" name="StartDate" type="date" value="@(Model.Query.StartDate?.ToString("yyyy-MM-dd") ?? string.Empty)" />
+            </div>
+            <div class="col-md-2">
+                <label class="form-label" for="Query_EndDate">結束日期</label>
+                <input class="form-control" id="Query_EndDate" name="EndDate" type="date" value="@(Model.Query.EndDate?.ToString("yyyy-MM-dd") ?? string.Empty)" />
+            </div>
+            <div class="col-md-3">
+                <label class="form-label" for="Query_SearchTerm">搜尋描述</label>
+                <input class="form-control" id="Query_SearchTerm" name="SearchTerm" value="@(Model.Query.SearchTerm ?? string.Empty)" />
+            </div>
+            <div class="col-md-1">
+                <button type="submit" class="btn btn-secondary w-100">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        @if (Model.Results.TotalCount == 0)
+        {
+            <div class="alert alert-info mb-0">
+                查無資料。
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-striped align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>記錄ID</th>
+                            <th>會員ID</th>
+                            <th>會員名稱</th>
+                            <th>變更類型</th>
+                            <th class="text-end">點數變動</th>
+                            <th class="text-end">變動後點數</th>
+                            <th>描述</th>
+                            <th>變動時間</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var record in Model.Results.Items)
+                        {
+                            <tr>
+                                <td>@record.LogId</td>
+                                <td>@record.UserId</td>
+                                <td>@record.UserName</td>
+                                <td>@record.ChangeType</td>
+                                <td class="text-end">@record.PointsChanged</td>
+                                <td class="text-end">@record.BalanceAfter</td>
+                                <td>@record.Description</td>
+                                <td>@record.ChangeTime.ToString("yyyy/MM/dd HH:mm")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <div class="d-flex justify-content-between align-items-center mt-3">
+                <div>
+                    共 @Model.Results.TotalCount 筆資料，頁次 @Model.Results.CurrentPage / @Model.Results.TotalPages
+                </div>
+                <div class="btn-group">
+                    <a class="btn btn-outline-secondary @(Model.Results.HasPreviousPage ? string.Empty : "disabled")"
+                       asp-action="WalletHistory"
+                       asp-route-UserId="@(Model.Query.UserId)"
+                       asp-route-ChangeType="@(Model.Query.ChangeType)"
+                       asp-route-StartDate="@(Model.Query.StartDate?.ToString("yyyy-MM-dd"))"
+                       asp-route-EndDate="@(Model.Query.EndDate?.ToString("yyyy-MM-dd"))"
+                       asp-route-SearchTerm="@(Model.Query.SearchTerm)"
+                       asp-route-PageNumber="@(Model.Results.CurrentPage - 1)"
+                       asp-route-PageSize="@(Model.Query.PageSize)">
+                        上一頁
+                    </a>
+                    <a class="btn btn-outline-secondary @(Model.Results.HasNextPage ? string.Empty : "disabled")"
+                       asp-action="WalletHistory"
+                       asp-route-UserId="@(Model.Query.UserId)"
+                       asp-route-ChangeType="@(Model.Query.ChangeType)"
+                       asp-route-StartDate="@(Model.Query.StartDate?.ToString("yyyy-MM-dd"))"
+                       asp-route-EndDate="@(Model.Query.EndDate?.ToString("yyyy-MM-dd"))"
+                       asp-route-SearchTerm="@(Model.Query.SearchTerm)"
+                       asp-route-PageNumber="@(Model.Results.CurrentPage + 1)"
+                       asp-route-PageSize="@(Model.Query.PageSize)">
+                        下一頁
+                    </a>
+                </div>
+            </div>
+        }
+    </div>
+</div>

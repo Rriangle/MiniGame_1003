@@ -1,0 +1,7 @@
+  GameSpace -> C:\Users\n2029\Desktop\GameSpace\GameSpace\GameSpace\bin\Debug\net8.0\GameSpace.dll
+
+建置成功。
+    0 個警告
+    0 個錯誤
+
+經過時間 00:00:00.91

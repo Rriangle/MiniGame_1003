@@ -1,0 +1,298 @@
+﻿@{
+    ViewData["Title"] = "會員簽到統計管理";
+    Layout = "~/Areas/MiniGame/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+    <!-- 頁面標題 -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">
+            <i class="fas fa-calendar-check me-2 text-primary"></i>會員簽到統計管理
+        </h1>
+        <div class="d-flex">
+            <a href="@Url.Action("RuleSettings")" class="btn btn-primary me-2 shadow-sm">
+                <i class="fas fa-cog"></i> 規則設定
+            </a>
+            <a href="@Url.Action("QueryRecords")" class="btn btn-success shadow-sm">
+                <i class="fas fa-search"></i> 查詢記錄
+            </a>
+        </div>
+    </div>
+
+    <!-- 統計卡片 -->
+    <div class="row">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-start border-primary shadow h-100 py-2 hover-card">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col me-2">
+                            <div class="text-xs fw-bold text-primary text-uppercase mb-1">今日簽到</div>
+                            <div class="h5 mb-0 fw-bold text-gray-800" id="todaySignIns">載入中...</div>
+                            <div class="text-xs text-muted">較昨日 <span class="text-success">+15.3%</span></div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-calendar-check fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-start border-success shadow h-100 py-2 hover-card">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col me-2">
+                            <div class="text-xs fw-bold text-success text-uppercase mb-1">連續簽到</div>
+                            <div class="h5 mb-0 fw-bold text-gray-800" id="consecutiveSignIns">載入中...</div>
+                            <div class="text-xs text-muted">最高記錄 <span class="text-success">30天</span></div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-fire fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-start border-info shadow h-100 py-2 hover-card">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col me-2">
+                            <div class="text-xs fw-bold text-info text-uppercase mb-1">本月簽到率</div>
+                            <div class="h5 mb-0 fw-bold text-gray-800" id="monthlyRate">載入中...</div>
+                            <div class="text-xs text-muted">較上月 <span class="text-success">+2.1%</span></div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-chart-pie fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-start border-warning shadow h-100 py-2 hover-card">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col me-2">
+                            <div class="text-xs fw-bold text-warning text-uppercase mb-1">總簽到次數</div>
+                            <div class="h5 mb-0 fw-bold text-gray-800" id="totalSignIns">載入中...</div>
+                            <div class="text-xs text-muted">較昨日 <span class="text-success">+89</span></div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-calendar-alt fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 搜尋和篩選區域 -->
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 fw-bold text-primary">
+                        <i class="fas fa-search"></i> 搜尋與篩選
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <form id="searchForm" class="row g-3">
+                        <div class="col-md-3">
+                            <label for="searchType" class="form-label">搜尋類型</label>
+                            <select class="form-select" id="searchType" name="searchType">
+                                <option value="all">全部記錄</option>
+                                <option value="today">今日簽到</option>
+                                <option value="week">本週簽到</option>
+                                <option value="month">本月簽到</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="userId" class="form-label">會員ID</label>
+                            <input type="text" class="form-control" id="userId" name="userId" placeholder="輸入會員ID">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="dateFrom" class="form-label">開始日期</label>
+                            <input type="date" class="form-control" id="dateFrom" name="dateFrom">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="dateTo" class="form-label">結束日期</label>
+                            <input type="date" class="form-control" id="dateTo" name="dateTo">
+                        </div>
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-search"></i> 搜尋
+                            </button>
+                            <button type="button" class="btn btn-secondary" id="resetSearch">
+                                <i class="fas fa-undo"></i> 重置
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 資料表格 -->
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 fw-bold text-primary">
+                        <i class="fas fa-table"></i> 簽到記錄
+                    </h6>
+                    <div class="dropdown no-arrow">
+                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-end shadow animated--fade-in" aria-labelledby="dropdownMenuLink">
+                            <div class="dropdown-header">操作選項</div>
+                            <a class="dropdown-item" href="#" id="exportData">
+                                <i class="fas fa-download fa-sm fa-fw me-2 text-gray-400"></i>
+                                匯出資料
+                            </a>
+                            <a class="dropdown-item" href="#" id="refreshData">
+                                <i class="fas fa-sync fa-sm fa-fw me-2 text-gray-400"></i>
+                                重新整理
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered" id="signInTable" width="100%" cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th>記錄ID</th>
+                                    <th>會員ID</th>
+                                    <th>簽到日期</th>
+                                    <th>連續天數</th>
+                                    <th>獲得點數</th>
+                                    <th>簽到時間</th>
+                                    <th>狀態</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="signInTableBody">
+                                <!-- 動態載入資料 -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script>
+    $(document).ready(function() {
+        // 初始化 DataTable
+        var table = $("#signInTable").DataTable({
+            "language": {
+                "url": "//cdn.datatables.net/plug-ins/1.10.24/i18n/Chinese-traditional.json"
+            },
+            "pageLength": 25,
+            "order": [[2, "desc"]],
+            "columnDefs": [
+                { "orderable": false, "targets": 7 }
+            ],
+            "processing": true,
+            "serverSide": false,
+            "ajax": {
+                "url": "@Url.Action("GetSignInData")",
+                "type": "POST"
+            }
+        });
+        
+        // 載入統計數據
+        loadStatistics();
+        
+        // 搜尋表單提交
+        $("#searchForm").on("submit", function(e) {
+            e.preventDefault();
+            var formData = $(this).serialize();
+            // 執行搜尋邏輯
+            console.log("搜尋條件:", formData);
+        });
+        
+        // 重置搜尋
+        $("#resetSearch").on("click", function() {
+            $("#searchForm")[0].reset();
+            table.search("").draw();
+        });
+        
+        // 匯出資料
+        $("#exportData").on("click", function() {
+            // 執行匯出邏輯
+            console.log("匯出資料");
+        });
+        
+        // 重新整理
+        $("#refreshData").on("click", function() {
+            table.ajax.reload();
+            loadStatistics();
+        });
+    });
+    
+    function loadStatistics() {
+        // 實際載入統計數據
+        $.ajax({
+            url: "@Url.Action("GetSignInStats")",
+            type: "GET",
+            data: { period: "today" },
+            success: function(response) {
+                if (response.success) {
+                    var data = response.data;
+                    $("#todaySignIns").text(data.todaySignIns);
+                    $("#consecutiveSignIns").text(data.consecutiveSignIns);
+                    $("#monthlyRate").text(data.monthlyRate.toFixed(1) + "%");
+                    $("#totalSignIns").text(data.totalSignIns.toLocaleString());
+                    
+                    // 計算變化百分比
+                    var signInsChange = data.todaySignIns - data.yesterdaySignIns;
+                    var consecutiveChange = data.consecutiveSignIns - data.yesterdayConsecutiveSignIns;
+                    var rateChange = (data.monthlyRate - data.yesterdayMonthlyRate).toFixed(1);
+                    var totalChange = data.totalSignIns - data.yesterdayTotalSignIns;
+                    
+                    $("#signInsChange").html("較昨日 <span class='text-" + (signInsChange >= 0 ? "success" : "danger") + "'>" + 
+                        (signInsChange >= 0 ? "+" : "") + signInsChange + "</span>");
+                    $("#consecutiveChange").html("較昨日 <span class='text-" + (consecutiveChange >= 0 ? "success" : "danger") + "'>" + 
+                        (consecutiveChange >= 0 ? "+" : "") + consecutiveChange + "</span>");
+                    $("#rateChange").html("較昨日 <span class='text-" + (rateChange >= 0 ? "success" : "danger") + "'>" + 
+                        (rateChange >= 0 ? "+" : "") + rateChange + "%</span>");
+                    $("#totalChange").html("較昨日 <span class='text-" + (totalChange >= 0 ? "success" : "danger") + "'>" + 
+                        (totalChange >= 0 ? "+" : "") + totalChange + "</span>");
+                } else {
+                    showError("載入統計數據失敗：" + response.message);
+                }
+            },
+            error: function() {
+                showError("載入統計數據時發生錯誤");
+            }
+        });
+    }
+    
+    // 添加錯誤處理函數
+    function showError(message) {
+        // 使用 Bootstrap Toast 顯示錯誤
+        var toastHtml = `
+            <div class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="d-flex">
+                    <div class="toast-body">${message}</div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                </div>
+            </div>
+        `;
+        $("#toastContainer").html(toastHtml);
+        $('.toast').toast('show');
+    }
+</script>
+
+
+
+

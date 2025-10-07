@@ -1,0 +1,52 @@
+﻿@model GameSpace.Areas.MiniGame.Models.ViewModels.WalletGrantCouponViewModel
+@{
+    ViewData["Title"] = "發放會員之商城優惠券";
+}
+
+@await Html.PartialAsync("_MiniGameAdminTabs")
+
+<div class="card shadow-sm">
+    <div class="card-header bg-primary text-white">
+        <h5 class="mb-0"><i class="fas fa-ticket-alt me-2"></i>發放商城優惠券（僅讀模式）</h5>
+    </div>
+    <div class="card-body">
+        <p class="text-muted mb-4">
+            下列表格提供目前優惠券類型的概況，方便在發放前參考。實際發放流程將於 Phase 2 實作。
+        </p>
+
+        @if (Model.CouponTypes.Count == 0)
+        {
+            <div class="alert alert-info mb-0">
+                查無資料。
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-striped align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>類型ID</th>
+                            <th>類型名稱</th>
+                            <th>描述</th>
+                            <th class="text-end">已發放</th>
+                            <th class="text-end">未使用</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var summary in Model.CouponTypes)
+                        {
+                            <tr>
+                                <td>@summary.CouponTypeId</td>
+                                <td>@summary.TypeName</td>
+                                <td>@summary.Description</td>
+                                <td class="text-end">@summary.TotalIssued</td>
+                                <td class="text-end">@summary.UnusedCount</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>

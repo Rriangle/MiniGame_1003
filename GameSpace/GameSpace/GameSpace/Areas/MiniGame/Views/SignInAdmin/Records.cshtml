@@ -1,0 +1,71 @@
+﻿@model GameSpace.Areas.MiniGame.Models.ViewModels.SignInRecordsViewModel
+@{
+    ViewData["Title"] = "查看會員簽到紀錄";
+}
+
+@await Html.PartialAsync("_MiniGameAdminTabs")
+
+<div class="card shadow-sm">
+    <div class="card-header bg-secondary text-white">
+        <h5 class="mb-0"><i class="fas fa-list me-2"></i>會員簽到紀錄</h5>
+    </div>
+    <div class="card-body">
+        @if (Model.Records.TotalCount == 0)
+        {
+            <div class="alert alert-info mb-0">
+                查無資料。
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-striped align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>紀錄ID</th>
+                            <th>會員ID</th>
+                            <th>會員帳號</th>
+                            <th>簽到時間</th>
+                            <th class="text-end">點數獎勵</th>
+                            <th class="text-end">經驗獎勵</th>
+                            <th>優惠券代碼</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var record in Model.Records.Items)
+                        {
+                            <tr>
+                                <td>@record.LogId</td>
+                                <td>@record.UserId</td>
+                                <td>@record.UserAccount</td>
+                                <td>@record.SignTime.ToString("yyyy/MM/dd HH:mm")</td>
+                                <td class="text-end">@record.PointsGained</td>
+                                <td class="text-end">@record.ExpGained</td>
+                                <td>@(record.CouponCode ?? "-")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <div class="d-flex justify-content-between align-items-center mt-3">
+                <div>
+                    共 @Model.Records.TotalCount 筆資料，頁次 @Model.Records.CurrentPage / @Model.Records.TotalPages
+                </div>
+                <div class="btn-group">
+                    <a class="btn btn-outline-secondary @(Model.Records.HasPreviousPage ? string.Empty : "disabled")"
+                       asp-action="Records"
+                       asp-route-page="@(Model.Records.CurrentPage - 1)"
+                       asp-route-pageSize="@(Model.Records.PageSize)">
+                        上一頁
+                    </a>
+                    <a class="btn btn-outline-secondary @(Model.Records.HasNextPage ? string.Empty : "disabled")"
+                       asp-action="Records"
+                       asp-route-page="@(Model.Records.CurrentPage + 1)"
+                       asp-route-pageSize="@(Model.Records.PageSize)">
+                        下一頁
+                    </a>
+                </div>
+            </div>
+        }
+    </div>
+</div>

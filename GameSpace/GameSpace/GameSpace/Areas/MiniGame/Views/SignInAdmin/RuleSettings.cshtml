@@ -1,0 +1,65 @@
+﻿@model GameSpace.Areas.MiniGame.Models.ViewModels.SignInRuleSettingsViewModel
+@{
+    ViewData["Title"] = "簽到規則設定";
+}
+
+@await Html.PartialAsync("_MiniGameAdminTabs")
+
+<div class="card shadow-sm">
+    <div class="card-header bg-success text-white">
+        <h5 class="mb-0"><i class="fas fa-calendar-check me-2"></i>簽到規則設定（僅讀）</h5>
+    </div>
+    <div class="card-body">
+        <p class="text-muted mb-4">
+            目前系統共有 <strong>@Model.Rules.Count</strong> 個簽到規則，其中 <strong>@Model.ActiveRuleCount</strong> 個啟用中。後續更新與調整將於 Phase 2 開放。
+        </p>
+
+        @if (Model.Rules.Count == 0)
+        {
+            <div class="alert alert-info mb-0">
+                查無資料。
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-striped align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>連續天數</th>
+                            <th class="text-end">點數獎勵</th>
+                            <th class="text-end">經驗獎勵</th>
+                            <th>是否贈送優惠券</th>
+                            <th>優惠券代碼</th>
+                            <th>描述</th>
+                            <th>狀態</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var rule in Model.Rules)
+                        {
+                            <tr>
+                                <td>第 @rule.DayNumber 天</td>
+                                <td class="text-end">@rule.Points</td>
+                                <td class="text-end">@rule.Experience</td>
+                                <td>@(rule.HasCoupon ? "是" : "否")</td>
+                                <td>@(rule.CouponTypeCode ?? "-")</td>
+                                <td>@rule.Description</td>
+                                <td>
+                                    @if (rule.IsActive)
+                                    {
+                                        <span class="badge bg-success">啟用</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">停用</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>

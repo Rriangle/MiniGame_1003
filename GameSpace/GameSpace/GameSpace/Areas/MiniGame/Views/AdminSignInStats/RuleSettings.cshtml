@@ -1,0 +1,105 @@
+﻿@{
+    ViewData["Title"] = "簽到規則設定";
+    Layout = "~/Areas/MiniGame/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">
+            <i class="fas fa-cog mr-2"></i>簽到規則設定
+        </h1>
+        <a href="@Url.Action("Index")" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> 返回列表
+        </a>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-calendar-alt"></i> 簽到規則配置
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <form>
+                        <div class="form-group">
+                            <label for="dailyPoints">每日簽到點數</label>
+                            <input type="number" class="form-control" id="dailyPoints" value="10" min="1">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="continuousBonus">連續簽到獎勵</label>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label for="day3">3天獎勵</label>
+                                    <input type="number" class="form-control" id="day3" value="50" min="0">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="day7">7天獎勵</label>
+                                    <input type="number" class="form-control" id="day7" value="100" min="0">
+                                </div>
+                            </div>
+                            <div class="row mt-2">
+                                <div class="col-md-6">
+                                    <label for="day15">15天獎勵</label>
+                                    <input type="number" class="form-control" id="day15" value="200" min="0">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="day30">30天獎勵</label>
+                                    <input type="number" class="form-control" id="day30" value="500" min="0">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="resetDay">重置日</label>
+                            <select class="form-control" id="resetDay">
+                                <option value="1">每月1日</option>
+                                <option value="15">每月15日</option>
+                                <option value="0">不重置</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="enableNotification" checked>
+                                <label class="form-check-label" for="enableNotification">
+                                    啟用簽到通知
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> 儲存設定
+                            </button>
+                            <button type="button" class="btn btn-secondary ml-2">
+                                <i class="fas fa-undo"></i> 重置
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-info">
+                        <i class="fas fa-info-circle"></i> 規則說明
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled">
+                        <li><i class="fas fa-check text-success"></i> 每日簽到可獲得基本點數</li>
+                        <li><i class="fas fa-check text-success"></i> 連續簽到有額外獎勵</li>
+                        <li><i class="fas fa-check text-success"></i> 可設定每月重置日</li>
+                        <li><i class="fas fa-exclamation-triangle text-warning"></i> 修改後立即生效</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

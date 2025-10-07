@@ -1,0 +1,191 @@
+﻿@model GameSpace.Areas.MiniGame.Models.ViewModels.AdminSignInCreateViewModel
+@{
+    ViewData["Title"] = "�s�Wñ�쬡��";
+    Layout = "~/Areas/MiniGame/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container-fluid">
+    <!-- �������D -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">�s�Wñ�쬡��</h1>
+        <div>
+            <a href="@Url.Action("Index", "AdminSignIn")" class="d-none d-sm-inline-block btn btn-sm btn-secondary shadow-sm">
+                <i class="fas fa-arrow-left fa-sm text-white-50"></i> ��^�C��
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">ñ�쬡�ʸ�T</h6>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Create" method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        
+                        <div class="form-group">
+                            <label asp-for="SignInName" class="control-label">ñ�쬡�ʦW�� *</label>
+                            <input asp-for="SignInName" class="form-control" placeholder="�п�Jñ�쬡�ʦW��" />
+                            <span asp-validation-for="SignInName" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label asp-for="SignInDescription" class="control-label">ñ�쬡�ʴy�z *</label>
+                            <textarea asp-for="SignInDescription" class="form-control" rows="4" placeholder="�п�Jñ�쬡�ʴy�z"></textarea>
+                            <span asp-validation-for="SignInDescription" class="text-danger"></span>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="RewardPoints" class="control-label">���y�I�� *</label>
+                                    <input asp-for="RewardPoints" type="number" class="form-control" placeholder="�п�J���y�I��" min="1" />
+                                    <span asp-validation-for="RewardPoints" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="IsActive" class="control-label">���A</label>
+                                    <div class="form-check">
+                                        <input asp-for="IsActive" class="form-check-input" type="checkbox" />
+                                        <label class="form-check-label" for="IsActive">
+                                            �ҥ�
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="StartDate" class="control-label">�}�l��� *</label>
+                                    <input asp-for="StartDate" type="datetime-local" class="form-control" />
+                                    <span asp-validation-for="StartDate" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="EndDate" class="control-label">������ *</label>
+                                    <input asp-for="EndDate" type="datetime-local" class="form-control" />
+                                    <span asp-validation-for="EndDate" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> �إ�ñ�쬡��
+                            </button>
+                            <a href="@Url.Action("Index", "AdminSignIn")" class="btn btn-secondary">
+                                <i class="fas fa-times"></i> ����
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">�إ߶���</h6>
+                </div>
+                <div class="card-body">
+                    <div class="text-center">
+                        <i class="fas fa-calendar-check fa-3x text-primary mb-3"></i>
+                        <h5>ñ�쬡�ʫإߪ`�N�ƶ�</h5>
+                    </div>
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success"></i>
+                            ���ʦW�٭n²����A
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success"></i>
+                            �y�z�n�M���������ʤ��e
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success"></i>
+                            ���y�I�ƭn�X�z�]�w
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success"></i>
+                            �}�l�M�������n���T
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success"></i>
+                            �i�H��ܬO�_�ߧY�ҥ�
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">�ֳt�]�w</h6>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <button type="button" class="btn btn-outline-primary" onclick="setQuickSettings('daily', '�C��ñ��', '�C��ñ����o�I�Ƽ��y', 100, 7)">
+                            <i class="fas fa-sun"></i> �C��ñ�� (7��)
+                        </button>
+                        <button type="button" class="btn btn-outline-success" onclick="setQuickSettings('weekly', '�gñ��', '�C�gñ����o�B�~���y', 500, 7)">
+                            <i class="fas fa-calendar-week"></i> �gñ�� (7��)
+                        </button>
+                        <button type="button" class="btn btn-outline-info" onclick="setQuickSettings('monthly', '��ñ��', '�C��ñ����o�׫p���y', 2000, 30)">
+                            <i class="fas fa-calendar-alt"></i> ��ñ�� (30��)
+                        </button>
+                        <button type="button" class="btn btn-outline-warning" onclick="setQuickSettings('event', '����ñ��', '�S�����ñ����y', 1000, 14)">
+                            <i class="fas fa-gift"></i> ����ñ�� (14��)
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    
+    <script>
+        function setQuickSettings(type, name, description, points, days) {
+            document.getElementById('SignInName').value = name;
+            document.getElementById('SignInDescription').value = description;
+            document.getElementById('RewardPoints').value = points;
+            
+            const today = new Date();
+            const endDate = new Date(today.getTime() + (days * 24 * 60 * 60 * 1000));
+            
+            document.getElementById('StartDate').value = today.toISOString().slice(0, 16);
+            document.getElementById('EndDate').value = endDate.toISOString().slice(0, 16);
+        }
+
+        // �������
+        document.getElementById('StartDate').addEventListener('change', function() {
+            const startDate = new Date(this.value);
+            const endDateInput = document.getElementById('EndDate');
+            const endDate = new Date(endDateInput.value);
+            
+            if (endDate <= startDate) {
+                const newEndDate = new Date(startDate.getTime() + (24 * 60 * 60 * 1000));
+                endDateInput.value = newEndDate.toISOString().slice(0, 16);
+            }
+        });
+
+        document.getElementById('EndDate').addEventListener('change', function() {
+            const endDate = new Date(this.value);
+            const startDateInput = document.getElementById('StartDate');
+            const startDate = new Date(startDateInput.value);
+            
+            if (endDate <= startDate) {
+                alert('�����������ߩ�}�l���');
+                this.value = '';
+            }
+        });
+    </script>
+}
+

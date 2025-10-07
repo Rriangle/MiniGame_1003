@@ -1,0 +1,54 @@
+﻿@model GameSpace.Areas.MiniGame.Models.ViewModels.WalletAdjustEVoucherViewModel
+@{
+    ViewData["Title"] = "調整會員之電子禮券";
+}
+
+@await Html.PartialAsync("_MiniGameAdminTabs")
+
+<div class="card shadow-sm">
+    <div class="card-header bg-danger text-white">
+        <h5 class="mb-0"><i class="fas fa-gift me-2"></i>調整電子禮券（僅讀模式）</h5>
+    </div>
+    <div class="card-body">
+        <p class="text-muted mb-4">
+            目前電子禮券類型與發放情況如下，提供調整前的參考資訊。實際增減流程將於 Phase 2 補上。
+        </p>
+
+        @if (Model.EVoucherTypes.Count == 0)
+        {
+            <div class="alert alert-info mb-0">
+                查無資料。
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-striped align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>類型ID</th>
+                            <th>類型名稱</th>
+                            <th>商家名稱</th>
+                            <th class="text-end">面額</th>
+                            <th class="text-end">已發放</th>
+                            <th class="text-end">未使用</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var summary in Model.EVoucherTypes)
+                        {
+                            <tr>
+                                <td>@summary.EVoucherTypeId</td>
+                                <td>@summary.TypeName</td>
+                                <td>@summary.MerchantName</td>
+                                <td class="text-end">@summary.VoucherValue.ToString("N0")</td>
+                                <td class="text-end">@summary.TotalIssued</td>
+                                <td class="text-end">@summary.UnusedCount</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>

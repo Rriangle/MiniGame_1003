@@ -1,0 +1,124 @@
+﻿@model GameSpace.Areas.MiniGame.Models.ViewModels.WalletEVouchersQueryViewModel
+@{
+    ViewData["Title"] = "查詢會員電子禮券";
+}
+
+@await Html.PartialAsync("_MiniGameAdminTabs")
+
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-info text-white">
+        <h5 class="mb-0"><i class="fas fa-gift me-2"></i>會員電子禮券查詢</h5>
+    </div>
+    <div class="card-body">
+        <form method="get" class="row g-3 align-items-end">
+            <div class="col-md-2">
+                <label class="form-label" for="Query_UserId">會員ID</label>
+                <input class="form-control" id="Query_UserId" name="UserId" type="number" value="@(Model.Query.UserId ?? null)" />
+            </div>
+            <div class="col-md-2">
+                <label class="form-label" for="Query_EVoucherTypeId">電子禮券類型ID</label>
+                <input class="form-control" id="Query_EVoucherTypeId" name="EVoucherTypeId" type="number" value="@(Model.Query.EVoucherTypeId ?? null)" />
+            </div>
+            <div class="col-md-2">
+                <label class="form-label" for="Query_TypeCode">類型代碼</label>
+                <input class="form-control" id="Query_TypeCode" name="TypeCode" value="@(Model.Query.TypeCode ?? string.Empty)" />
+            </div>
+            <div class="col-md-3">
+                <label class="form-label" for="Query_SearchTerm">搜尋（代碼/會員）</label>
+                <input class="form-control" id="Query_SearchTerm" name="SearchTerm" value="@(Model.Query.SearchTerm ?? string.Empty)" />
+            </div>
+            <div class="col-md-2">
+                <label class="form-label" for="Query_Status">狀態</label>
+                <select class="form-select" id="Query_Status" name="Status">
+                    <option value="">全部</option>
+                    <!option value="unused" @(Model.Query.Status?.Equals("unused", StringComparison.OrdinalIgnoreCase) == true ? "selected" : "")>未使用</!option>
+                    <!option value="used" @(Model.Query.Status?.Equals("used", StringComparison.OrdinalIgnoreCase) == true ? "selected" : "")>已使用</!option>
+                    <!option value="expired" @(Model.Query.Status?.Equals("expired", StringComparison.OrdinalIgnoreCase) == true ? "selected" : "")>已過期</!option>
+                </select>
+            </div>
+            <div class="col-md-1">
+                <button type="submit" class="btn btn-info text-white w-100">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        @if (Model.Results.TotalCount == 0)
+        {
+            <div class="alert alert-info mb-0">
+                查無資料。
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-striped align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>電子禮券ID</th>
+                            <th>會員ID</th>
+                            <th>會員名稱</th>
+                            <th>類型</th>
+                            <th>取得時間</th>
+                            <th>使用時間</th>
+                            <th>有效期限</th>
+                            <th>狀態</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var record in Model.Results.Items)
+                        {
+                            <tr>
+                                <td>@record.EVoucherId</td>
+                                <td>@record.UserId</td>
+                                <td>@record.UserName</td>
+                                <td>@record.EVoucherTypeName</td>
+                                <td>@record.AcquiredTime.ToString("yyyy/MM/dd HH:mm")</td>
+                                <td>@(record.UsedTime?.ToString("yyyy/MM/dd HH:mm") ?? "-")</td>
+                                <td>@record.ValidTo.ToString("yyyy/MM/dd")</td>
+                                <td>@record.Status</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <div class="d-flex justify-content-between align-items-center mt-3">
+                <div>
+                    共 @Model.Results.TotalCount 筆資料，頁次 @Model.Results.CurrentPage / @Model.Results.TotalPages
+                </div>
+                <div class="btn-group">
+                    <a class="btn btn-outline-secondary @(Model.Results.HasPreviousPage ? string.Empty : "disabled")"
+                       asp-action="EVouchersQuery"
+                       asp-route-UserId="@(Model.Query.UserId)"
+                       asp-route-EVoucherTypeId="@(Model.Query.EVoucherTypeId)"
+                       asp-route-TypeCode="@(Model.Query.TypeCode)"
+                       asp-route-Status="@(Model.Query.Status)"
+                       asp-route-SearchTerm="@(Model.Query.SearchTerm)"
+                       asp-route-SortBy="@(Model.Query.SortBy)"
+                       asp-route-Descending="@(Model.Query.Descending)"
+                       asp-route-PageNumber="@(Model.Results.CurrentPage - 1)"
+                       asp-route-PageSize="@(Model.Query.PageSize)">
+                        上一頁
+                    </a>
+                    <a class="btn btn-outline-secondary @(Model.Results.HasNextPage ? string.Empty : "disabled")"
+                       asp-action="EVouchersQuery"
+                       asp-route-UserId="@(Model.Query.UserId)"
+                       asp-route-EVoucherTypeId="@(Model.Query.EVoucherTypeId)"
+                       asp-route-TypeCode="@(Model.Query.TypeCode)"
+                       asp-route-Status="@(Model.Query.Status)"
+                       asp-route-SearchTerm="@(Model.Query.SearchTerm)"
+                       asp-route-SortBy="@(Model.Query.SortBy)"
+                       asp-route-Descending="@(Model.Query.Descending)"
+                       asp-route-PageNumber="@(Model.Results.CurrentPage + 1)"
+                       asp-route-PageSize="@(Model.Query.PageSize)">
+                        下一頁
+                    </a>
+                </div>
+            </div>
+        }
+    </div>
+</div>

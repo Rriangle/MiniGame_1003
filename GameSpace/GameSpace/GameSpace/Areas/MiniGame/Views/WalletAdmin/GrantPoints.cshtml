@@ -1,0 +1,52 @@
+﻿@model GameSpace.Areas.MiniGame.Models.ViewModels.WalletGrantPointsViewModel
+@{
+    ViewData["Title"] = "發放會員點數";
+}
+
+@await Html.PartialAsync("_MiniGameAdminTabs")
+
+<div class="card shadow-sm">
+    <div class="card-header bg-warning">
+        <h5 class="mb-0"><i class="fas fa-hand-holding-usd me-2"></i>發放會員點數（僅讀模式）</h5>
+    </div>
+    <div class="card-body">
+        <p class="text-muted mb-4">
+            此頁面提供發放前的參考資料，顯示目前點數最高的會員。待 Phase 2 完成後可於此頁執行實際發放流程。
+        </p>
+
+        @if (Model.Candidates.Count == 0)
+        {
+            <div class="alert alert-info mb-0">
+                查無資料。
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-striped align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>會員ID</th>
+                            <th>帳號</th>
+                            <th>姓名</th>
+                            <th>Email</th>
+                            <th class="text-end">點數</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var candidate in Model.Candidates)
+                        {
+                            <tr>
+                                <td>@candidate.UserId</td>
+                                <td>@candidate.UserAccount</td>
+                                <td>@candidate.UserName</td>
+                                <td>@candidate.Email</td>
+                                <td class="text-end">@candidate.Points</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>

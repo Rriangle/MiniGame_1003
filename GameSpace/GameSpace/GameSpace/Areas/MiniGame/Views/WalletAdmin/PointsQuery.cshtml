@@ -1,0 +1,114 @@
+﻿@model GameSpace.Areas.MiniGame.Models.ViewModels.WalletPointsQueryViewModel
+@{
+    ViewData["Title"] = "查詢會員點數";
+}
+
+@await Html.PartialAsync("_MiniGameAdminTabs")
+
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-primary text-white">
+        <h5 class="mb-0"><i class="fas fa-coins me-2"></i>會員點數查詢</h5>
+    </div>
+    <div class="card-body">
+        <form method="get" class="row g-3 align-items-end">
+            <div class="col-md-2">
+                <label class="form-label" for="Query_UserId">會員ID</label>
+                <input class="form-control" id="Query_UserId" name="UserId" type="number" value="@(Model.Query.UserId ?? null)" />
+            </div>
+            <div class="col-md-2">
+                <label class="form-label" for="Query_MinAmount">最少點數</label>
+                <input class="form-control" id="Query_MinAmount" name="MinAmount" type="number" value="@(Model.Query.MinAmount ?? null)" />
+            </div>
+            <div class="col-md-2">
+                <label class="form-label" for="Query_MaxAmount">最多點數</label>
+                <input class="form-control" id="Query_MaxAmount" name="MaxAmount" type="number" value="@(Model.Query.MaxAmount ?? null)" />
+            </div>
+            <div class="col-md-3">
+                <label class="form-label" for="Query_SearchTerm">搜尋（帳號/名稱/Email）</label>
+                <input class="form-control" id="Query_SearchTerm" name="SearchTerm" value="@(Model.Query.SearchTerm ?? string.Empty)" />
+            </div>
+            <div class="col-md-2">
+                <label class="form-label" for="Query_SortBy">排序</label>
+                <select class="form-select" id="Query_SortBy" name="SortBy">
+                    <!option value="points_desc" @(Model.Query.SortBy?.Equals("points_desc", StringComparison.OrdinalIgnoreCase) == true ? "selected" : "")>點數（高 → 低）</!option>
+                    <!option value="points_asc" @(Model.Query.SortBy?.Equals("points_asc", StringComparison.OrdinalIgnoreCase) == true ? "selected" : "")>點數（低 → 高）</!option>
+                    <!option value="userid_desc" @(Model.Query.SortBy?.Equals("userid_desc", StringComparison.OrdinalIgnoreCase) == true ? "selected" : "")>會員ID（高 → 低）</!option>
+                    <!option value="userid_asc" @(Model.Query.SortBy?.Equals("userid_asc", StringComparison.OrdinalIgnoreCase) == true ? "selected" : "")>會員ID（低 → 高）</!option>
+                </select>
+            </div>
+            <div class="col-md-1">
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        @if (Model.Results.TotalCount == 0)
+        {
+            <div class="alert alert-info mb-0">
+                查無資料。
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-striped align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>會員ID</th>
+                            <th>帳號</th>
+                            <th>姓名</th>
+                            <th>Email</th>
+                            <th class="text-end">點數</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var record in Model.Results.Items)
+                        {
+                            <tr>
+                                <td>@record.UserId</td>
+                                <td>@record.UserAccount</td>
+                                <td>@record.UserName</td>
+                                <td>@record.Email</td>
+                                <td class="text-end">@record.Points</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <div class="d-flex justify-content-between align-items-center mt-3">
+                <div>
+                    共 @Model.Results.TotalCount 筆資料，頁次 @Model.Results.CurrentPage / @Model.Results.TotalPages
+                </div>
+                <div class="btn-group">
+                    <a class="btn btn-outline-secondary @(Model.Results.HasPreviousPage ? string.Empty : "disabled")"
+                       asp-action="PointsQuery"
+                       asp-route-UserId="@(Model.Query.UserId)"
+                       asp-route-MinAmount="@(Model.Query.MinAmount)"
+                       asp-route-MaxAmount="@(Model.Query.MaxAmount)"
+                       asp-route-SearchTerm="@(Model.Query.SearchTerm)"
+                       asp-route-SortBy="@(Model.Query.SortBy)"
+                       asp-route-PageNumber="@(Model.Results.CurrentPage - 1)"
+                       asp-route-PageSize="@(Model.Query.PageSize)">
+                        上一頁
+                    </a>
+                    <a class="btn btn-outline-secondary @(Model.Results.HasNextPage ? string.Empty : "disabled")"
+                       asp-action="PointsQuery"
+                       asp-route-UserId="@(Model.Query.UserId)"
+                       asp-route-MinAmount="@(Model.Query.MinAmount)"
+                       asp-route-MaxAmount="@(Model.Query.MaxAmount)"
+                       asp-route-SearchTerm="@(Model.Query.SearchTerm)"
+                       asp-route-SortBy="@(Model.Query.SortBy)"
+                       asp-route-PageNumber="@(Model.Results.CurrentPage + 1)"
+                       asp-route-PageSize="@(Model.Query.PageSize)">
+                        下一頁
+                    </a>
+                </div>
+            </div>
+        }
+    </div>
+</div>

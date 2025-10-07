@@ -1,0 +1,104 @@
+﻿@using System
+@using System.Linq
+@{
+    var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
+    var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
+
+    var tabs = new[]
+    {
+        (
+            Title: "會員錢包系統（Admin）",
+            Icon: "fa-wallet",
+            Items: new[]
+            {
+                (Text: "查詢會員點數", Controller: "WalletAdmin", Action: "PointsQuery"),
+                (Text: "查詢會員擁有商城優惠券", Controller: "WalletAdmin", Action: "CouponsQuery"),
+                (Text: "查詢會員擁有電子禮券", Controller: "WalletAdmin", Action: "EVouchersQuery"),
+                (Text: "發放會員點數", Controller: "WalletAdmin", Action: "GrantPoints"),
+                (Text: "發放會員之商城優惠券", Controller: "WalletAdmin", Action: "GrantCoupon"),
+                (Text: "調整會員之電子禮券", Controller: "WalletAdmin", Action: "AdjustEVoucher"),
+                (Text: "查看會員收支明細", Controller: "WalletAdmin", Action: "WalletHistory")
+            }
+        ),
+        (
+            Title: "會員簽到系統（Admin）",
+            Icon: "fa-calendar-check",
+            Items: new[]
+            {
+                (Text: "簽到規則設定", Controller: "SignInAdmin", Action: "RuleSettings"),
+                (Text: "查看會員簽到紀錄", Controller: "SignInAdmin", Action: "Records")
+            }
+        ),
+        (
+            Title: "寵物系統（Admin）",
+            Icon: "fa-paw",
+            Items: new[]
+            {
+                (Text: "整體規則設定", Controller: "PetAdmin", Action: "RuleSettings"),
+                (Text: "會員個別寵物設定", Controller: "PetAdmin", Action: "MemberEdit"),
+                (Text: "會員個別寵物清單與查詢", Controller: "PetAdmin", Action: "MemberList"),
+                (Text: "換膚色紀錄", Controller: "PetAdmin", Action: "SkinChangeLog"),
+                (Text: "換背景紀錄", Controller: "PetAdmin", Action: "BackgroundChangeLog")
+            }
+        ),
+        (
+            Title: "小遊戲系統（Admin）",
+            Icon: "fa-gamepad",
+            Items: new[]
+            {
+                (Text: "遊戲規則設定", Controller: "GameAdmin", Action: "RuleSettings"),
+                (Text: "查看會員遊戲紀錄", Controller: "GameAdmin", Action: "Records")
+            }
+        )
+    };
+
+    var activeTabIndex = Array.FindIndex(tabs, tab =>
+        tab.Items.Any(item => string.Equals(item.Controller, currentController, StringComparison.OrdinalIgnoreCase)));
+    if (activeTabIndex < 0)
+    {
+        activeTabIndex = 0;
+    }
+    var activeTab = tabs[activeTabIndex];
+}
+
+<div class="mb-3">
+    <ul class="nav nav-tabs flex-wrap">
+        @foreach (var tab in tabs)
+        {
+            var isActive = ReferenceEquals(tab, activeTab);
+            var defaultItem = tab.Items.First();
+            <li class="nav-item">
+                <a class="nav-link @(isActive ? "active" : string.Empty)"
+                   asp-area="MiniGame"
+                   asp-controller="@defaultItem.Controller"
+                   asp-action="@defaultItem.Action">
+                    <i class="fas @tab.Icon me-1"></i>@tab.Title
+                </a>
+            </li>
+        }
+    </ul>
+</div>
+
+@{
+    var activeItems = activeTab.Items;
+}
+
+<div class="mb-4">
+    <ul class="nav nav-pills flex-wrap gap-2">
+        @foreach (var item in activeItems)
+        {
+            var isActiveItem =
+                string.Equals(item.Controller, currentController, StringComparison.OrdinalIgnoreCase) &&
+                string.Equals(item.Action, currentAction, StringComparison.OrdinalIgnoreCase);
+
+            <li class="nav-item">
+                <a class="nav-link @(isActiveItem ? "active" : string.Empty)"
+                   asp-area="MiniGame"
+                   asp-controller="@item.Controller"
+                   asp-action="@item.Action">
+                    @item.Text
+                </a>
+            </li>
+        }
+    </ul>
+</div>
