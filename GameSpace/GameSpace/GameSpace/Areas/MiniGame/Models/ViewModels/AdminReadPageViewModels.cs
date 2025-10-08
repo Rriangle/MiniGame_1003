@@ -1,5 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+using GameSpace.Areas.MiniGame.Models;
+using GameSpace.Areas.MiniGame.Models.Settings;
+using GameSpace.Areas.MiniGame.Services;
 
 namespace GameSpace.Areas.MiniGame.Models.ViewModels
 {
@@ -242,5 +245,95 @@ namespace GameSpace.Areas.MiniGame.Models.ViewModels
     public class GameRecordsViewModel
     {
         public PagedResult<GameRecordViewModel> Records { get; set; } = new();
+    }
+
+    public class PetSystemRulesViewModel
+    {
+        public IReadOnlyList<PetLevelExperienceSetting> LevelExperienceSettings { get; set; } = Array.Empty<PetLevelExperienceSetting>();
+        public IReadOnlyList<PetLevelUpRule> LevelUpRules { get; set; } = Array.Empty<PetLevelUpRule>();
+        public IReadOnlyList<PetInteractionBonusRules> InteractionBonusRules { get; set; } = Array.Empty<PetInteractionBonusRules>();
+        public IReadOnlyList<PetColorOption> ColorOptions { get; set; } = Array.Empty<PetColorOption>();
+        public IReadOnlyList<PetBackgroundOptionEntity> BackgroundOptions { get; set; } = Array.Empty<PetBackgroundOptionEntity>();
+        public PetSkinColorCostSetting? SkinColorCostSettings { get; set; }
+        public PetBackgroundCostSetting? BackgroundCostSettings { get; set; }
+    }
+
+    public class GameRulesViewModel
+    {
+        public int DailyGameLimit { get; set; } = 3;
+        public Dictionary<string, string> GameRewardSettings { get; set; } = new();
+    }
+
+    public class GameRecordsQueryViewModel
+    {
+        public string SearchTerm { get; set; } = string.Empty;
+        public string Result { get; set; } = string.Empty;
+        public string SortBy { get; set; } = "recent";
+        public int Page { get; set; } = 1;
+        public int PageSize { get; set; } = 20;
+        public int TotalCount { get; set; }
+        public IReadOnlyList<GameRecordViewModel> Records { get; set; } = Array.Empty<GameRecordViewModel>();
+    }
+
+    public class PetIndividualSettingsViewModel
+    {
+        public int PetId { get; set; }
+        public int UserId { get; set; }
+        public string UserName { get; set; } = string.Empty;
+        public string PetName { get; set; } = string.Empty;
+        public string CurrentSkinColor { get; set; } = string.Empty;
+        public string CurrentBackground { get; set; } = string.Empty;
+        public IReadOnlyList<PetColorOption> ColorOptions { get; set; } = Array.Empty<PetColorOption>();
+        public IReadOnlyList<PetBackgroundOptionEntity> BackgroundOptions { get; set; } = Array.Empty<PetBackgroundOptionEntity>();
+    }
+
+    public class PetQueryRecord
+    {
+        public int PetId { get; set; }
+        public int UserId { get; set; }
+        public string UserName { get; set; } = string.Empty;
+        public string PetName { get; set; } = string.Empty;
+        public int Level { get; set; }
+        public int Experience { get; set; }
+        public string SkinColor { get; set; } = string.Empty;
+        public string Background { get; set; } = string.Empty;
+        public int Happiness { get; set; }
+        public int Health { get; set; }
+        public int Hunger { get; set; }
+        public int Energy { get; set; }
+        public int Intelligence { get; set; }
+    }
+
+    public class PetQueryViewModel
+    {
+        public string SearchTerm { get; set; } = string.Empty;
+        public string SortBy { get; set; } = "name";
+        public int Page { get; set; } = 1;
+        public int PageSize { get; set; } = 20;
+        public int TotalCount { get; set; }
+        public IReadOnlyList<PetQueryRecord> Pets { get; set; } = Array.Empty<PetQueryRecord>();
+    }
+
+    public class ColorChangeRecord
+    {
+        public int LogId { get; set; }
+        public int UserId { get; set; }
+        public string UserName { get; set; } = string.Empty;
+        public string ChangeType { get; set; } = string.Empty;
+        public DateTime ChangeTime { get; set; }
+        public int PointsChange { get; set; }
+        public string Description { get; set; } = string.Empty;
+    }
+
+    public class ColorChangeHistoryViewModel
+    {
+        public int? UserId { get; set; }
+        public DateTime? StartDate { get; set; }
+        public DateTime? EndDate { get; set; }
+        public string ChangeType { get; set; } = "skin";
+        public int Page { get; set; } = 1;
+        public int PageSize { get; set; } = 20;
+        public int TotalCount { get; set; }
+        public IReadOnlyList<ColorChangeRecord> Records { get; set; } = Array.Empty<ColorChangeRecord>();
     }
 }

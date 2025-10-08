@@ -1,284 +1,79 @@
-@model GameSpace.Areas.MiniGame.Models.ViewModels.PetIndividualSettingsModel
+@model GameSpace.Areas.MiniGame.Models.ViewModels.PetIndividualSettingsViewModel
 @{
-    ViewData["Title"] = "∑|≠˚≠”ßO√d™´≥]©w";
-    Layout = "~/Areas/MiniGame/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "ÊúÉÂì°ÂÄãÂà•ÂØµÁâ©Ë®≠ÂÆö";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
+
+@await Html.PartialAsync("_MiniGameAdminTabs")
 
 <div class="container-fluid">
-    <!-- Page Heading -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800">∑|≠˚≠”ßO√d™´≥]©w</h1>
+        <h1 class="h3 mb-0 text-gray-800">ÊúÉÂì°ÂÄãÂà•ÂØµÁâ©Ë®≠ÂÆö</h1>
     </div>
 
-    <!-- ∑j¥M™Ì≥Ê -->
     <div class="card shadow mb-4">
         <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary">∑j¥M√d™´</h6>
+            <h6 class="m-0 font-weight-bold text-primary">ÂØµÁâ©Ë≥áÊñô</h6>
         </div>
         <div class="card-body">
-            <form method="get" id="searchForm">
-                <div class="row">
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <label for="userId">•Œ§·ID</label>
-                            <input type="text" class="form-control" id="userId" name="userId" placeholder="øÈ§J•Œ§·ID">
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <label for="petName">√d™´¶W∫Ÿ</label>
-                            <input type="text" class="form-control" id="petName" name="petName" placeholder="øÈ§J√d™´¶W∫Ÿ">
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <label for="petId">√d™´ID</label>
-                            <input type="text" class="form-control" id="petId" name="petId" placeholder="øÈ§J√d™´ID">
-                        </div>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-search"></i> ∑j¥M
-                    </button>
-                    <button type="button" class="btn btn-secondary" onclick="resetForm()">
-                        <i class="fas fa-undo"></i> ≠´∏m
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- √d™´¶C™Ì -->
-    <div class="card shadow mb-4">
-        <div class="card-header py-3 d-flex justify-content-between align-items-center">
-            <h6 class="m-0 font-weight-bold text-primary">√d™´¶C™Ì</h6>
-            <span class="badge badge-info" id="resultCount">¶@ 0 ∞¶√d™´</span>
-        </div>
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-bordered" width="100%" cellspacing="0">
-                    <thead>
-                        <tr>
-                            <th>√d™´ID</th>
-                            <th>•Œ§·ID</th>
-                            <th>√d™´¶W∫Ÿ</th>
-                            <th>µ•Ø≈</th>
-                            <th>∏g≈Á≠»</th>
-                            <th>Ωß¶‚</th>
-                            <th>≠I¥∫</th>
-                            <th>™¨∫A</th>
-                            <th>æﬁß@</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @if (Model != null && Model.Pets != null && Model.Pets.Any())
-                        {
-                            @foreach (var pet in Model.Pets)
-                            {
-                                <tr>
-                                    <td>@pet.Id</td>
-                                    <td>@pet.UserId</td>
-                                    <td>@pet.Name</td>
-                                    <td>
-                                        <span class="badge badge-primary">@pet.Level</span>
-                                    </td>
-                                    <td>@pet.Experience</td>
-                                    <td>
-                                        <span class="badge badge-info" style="background-color: @pet.SkinColor;">@pet.SkinColor</span>
-                                    </td>
-                                    <td>@pet.Background</td>
-                                    <td>
-                                        @if (pet.IsActive)
-                                        {
-                                            <span class="badge badge-success">¨°≈D</span>
-                                        }
-                                        else
-                                        {
-                                            <span class="badge badge-secondary">´D¨°≈D</span>
-                                        }
-                                    </td>
-                                    <td>
-                                        <button class="btn btn-sm btn-warning" onclick="editPet(@pet.Id)">
-                                            <i class="fas fa-edit"></i> ΩsøË
-                                        </button>
-                                        <button class="btn btn-sm btn-info" onclick="viewPetDetails(@pet.Id)">
-                                            <i class="fas fa-eye"></i> ∏‘±°
-                                        </button>
-                                    </td>
-                                </tr>
-                            }
-                        }
-                        else
-                        {
-                            <tr>
-                                <td colspan="9" class="text-center">Ω–øÈ§J∑j¥M±¯•Û∂i¶Ê¨d∏ﬂ</td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- ΩsøË√d™´º“∫AÆÿ -->
-<div class="modal fade" id="editPetModal" tabindex="-1" role="dialog" aria-labelledby="editPetModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="editPetModalLabel">ΩsøË√d™´≥]©w</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form id="editPetForm">
-                    <input type="hidden" id="editPetId" name="petId">
-                    
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="editPetName">√d™´¶W∫Ÿ *</label>
-                                <input type="text" class="form-control" id="editPetName" name="petName" required>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="editPetLevel">µ•Ø≈ *</label>
-                                <input type="number" class="form-control" id="editPetLevel" name="level" min="1" max="100" required>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="editPetExperience">∏g≈Á≠» *</label>
-                                <input type="number" class="form-control" id="editPetExperience" name="experience" min="0" required>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="editPetSkinColor">Ωß¶‚ *</label>
-                                <select class="form-control" id="editPetSkinColor" name="skinColor" required>
-                                    <option value="">Ω–øÔæ‹Ωß¶‚</option>
-                                    <option value="¨ı¶‚">¨ı¶‚</option>
-                                    <option value="¬≈¶‚">¬≈¶‚</option>
-                                    <option value="∫Ò¶‚">∫Ò¶‚</option>
-                                    <option value="∂¿¶‚">∂¿¶‚</option>
-                                    <option value="µµ¶‚">µµ¶‚</option>
-                                    <option value="æÌ¶‚">æÌ¶‚</option>
-                                    <option value="Øª¶‚">Øª¶‚</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="editPetBackground">≠I¥∫ *</label>
-                                <select class="form-control" id="editPetBackground" name="background" required>
-                                    <option value="">Ω–øÔæ‹≠I¥∫</option>
-                                    <option value="¥À™L">¥À™L</option>
-                                    <option value="Æ¸√‰">Æ¸√‰</option>
-                                    <option value="´∞•´">´∞•´</option>
-                                    <option value="§”™≈">§”™≈</option>
-                                    <option value="™·∂È">™·∂È</option>
-                                    <option value="≥∑§s">≥∑§s</option>
-                                    <option value="®F∫z">®F∫z</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="editPetStatus">™¨∫A</label>
-                                <select class="form-control" id="editPetStatus" name="isActive">
-                                    <option value="true">¨°≈D</option>
-                                    <option value="false">´D¨°≈D</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-
+            <div class="row">
+                <div class="col-md-6">
                     <div class="form-group">
-                        <label for="editPetDescription">¥y≠z</label>
-                        <textarea class="form-control" id="editPetDescription" name="description" rows="3"></textarea>
+                        <label>ÂØµÁâ© ID</label>
+                        <input type="text" class="form-control" value="@Model.PetId" readonly />
                     </div>
-                </form>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>ÊúÉÂì° ID</label>
+                        <input type="text" class="form-control" value="@Model.UserId" readonly />
+                    </div>
+                </div>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">®˙Æ¯</button>
-                <button type="button" class="btn btn-primary" onclick="savePetChanges()">¿x¶s≈‹ßÛ</button>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>ÊúÉÂì°ÂêçÁ®±</label>
+                        <input type="text" class="form-control" value="@Model.UserName" readonly />
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>ÂØµÁâ©ÂêçÁ®±</label>
+                        <input type="text" class="form-control" name="petName" value="@Model.PetName" />
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>ÁõÆÂâçËÜöËâ≤</label>
+                        <select class="form-control" name="skinColor">
+                            @foreach (var option in Model.ColorOptions)
+                            {
+                                <option value="@option.ColorCode" selected="@(option.ColorCode == Model.CurrentSkinColor)">@option.ColorName</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>ÁõÆÂâçËÉåÊôØ</label>
+                        <select class="form-control" name="background">
+                            @foreach (var option in Model.BackgroundOptions)
+                            {
+                                <option value="@option.BackgroundCode" selected="@(option.BackgroundCode == Model.CurrentBackground)">@option.BackgroundName</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <button type="submit" class="btn btn-primary">ÂÑ≤Â≠òËÆäÊõ¥</button>
+                    <a href="@Url.Action("QueryPets", "AdminPet")" class="btn btn-secondary">ËøîÂõûÂàóË°®</a>
+                </div>
             </div>
         </div>
     </div>
 </div>
-
-<script>
-function resetForm() {
-    document.getElementById("searchForm").reset();
-}
-
-function editPet(petId) {
-    // ∏¸§J√d™´∏ÍÆ∆®√≈„•‹ΩsøËº“∫AÆÿ
-    document.getElementById("editPetId").value = petId;
-    document.getElementById("editPetName").value = "∏¸§J§§...";
-    document.getElementById("editPetLevel").value = "5";
-    document.getElementById("editPetExperience").value = "250";
-    document.getElementById("editPetSkinColor").value = "¬≈¶‚";
-    document.getElementById("editPetBackground").value = "¥À™L";
-    document.getElementById("editPetStatus").value = "true";
-    document.getElementById("editPetDescription").value = "∏¸§J§§...";
-    
-    $("#editPetModal").modal("show");
-}
-
-function viewPetDetails(petId) {
-    // ¨d¨›√d™´∏‘±°
-    alert("¨d¨›√d™´∏‘±°: " + petId);
-}
-
-function savePetChanges() {
-    const petId = document.getElementById("editPetId").value;
-    const petName = document.getElementById("editPetName").value;
-    const level = document.getElementById("editPetLevel").value;
-    const experience = document.getElementById("editPetExperience").value;
-    const skinColor = document.getElementById("editPetSkinColor").value;
-    const background = document.getElementById("editPetBackground").value;
-    const isActive = document.getElementById("editPetStatus").value;
-    const description = document.getElementById("editPetDescription").value;
-
-    if (!petName || !level || !experience || !skinColor || !background) {
-        alert("Ω–∂Òºg©“¶≥•≤∂ÒƒÊ¶Ï");
-        return;
-    }
-
-    if (!confirm(`ΩT©w≠n¿x¶s√d™´ ${petName} ™∫≈‹ßÛ∂‹°H`)) {
-        return;
-    }
-
-    // µo∞e AJAX Ω–®D®Ï´·∫›¿x¶s≈‹ßÛ
-    alert("√d™´≥]©w§w¿x¶s");
-    $("#editPetModal").modal("hide");
-    
-    // ≠´∑s∏¸§J≠∂≠±©ŒßÛ∑s™ÌÆÊ
-    location.reload();
-}
-
-// ßÛ∑sµ≤™G≠pº∆
-function updateResultCount() {
-    const rows = document.querySelectorAll("tbody tr");
-    const count = rows.length - (rows.length > 0 && rows[0].cells[0].textContent.includes("Ω–øÈ§J") ? 1 : 0);
-    document.getElementById("resultCount").textContent = `¶@ ${count} ∞¶√d™´`;
-}
-
-// ≠∂≠±∏¸§JÆ…∞ı¶Ê
-document.addEventListener("DOMContentLoaded", function() {
-    updateResultCount();
-});
-</script>
-
-
-

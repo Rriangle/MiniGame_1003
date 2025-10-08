@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 using GameSpace.Models;
@@ -507,6 +507,122 @@ namespace GameSpace.Areas.MiniGame.Controllers
             }
         }
         */
+
+        /// <summary>
+        /// 遊戲規則設定頁面
+        /// </summary>
+        public async Task<IActionResult> GameRules()
+        {
+            try
+            {
+                // 獲取每日遊戲次數限制設定
+                var dailyGameLimit = await _context.SystemSettings
+                    .AsNoTracking()
+                    .Where(s => s.SettingKey == "DailyGameLimit")
+                    .FirstOrDefaultAsync();
+
+                // 獲取遊戲獎勵設定
+                var gameRewardSettings = await _context.SystemSettings
+                    .AsNoTracking()
+                    .Where(s => s.SettingKey.StartsWith("GameReward_"))
+                    .ToListAsync();
+
+                var model = new GameRulesViewModel
+                {
+                    DailyGameLimit = dailyGameLimit?.SettingValue != null ? int.Parse(dailyGameLimit.SettingValue) : 3,
+                    GameRewardSettings = gameRewardSettings.ToDictionary(
+                        s => s.SettingKey.Replace("GameReward_", ""),
+                        s => s.SettingValue
+                    )
+                };
+
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = $"載入遊戲規則設定時發生錯誤：{ex.Message}";
+                return View(new GameRulesViewModel());
+            }
+        }
+
+        /// <summary>
+        /// 查看會員遊戲紀錄
+        /// </summary>
+        public async Task<IActionResult> ViewGameRecords(string searchTerm = "", string result = "", string sortBy = "recent", int page = 1, int pageSize = 20)
+        {
+            try
+            {
+                var query = _context.MiniGames
+                    .AsNoTracking()
+                    .Include(g => g.User)
+                    .AsQueryable();
+
+                // 搜尋功能
+                if (!string.IsNullOrEmpty(searchTerm))
+                {
+                    if (int.TryParse(searchTerm, out int userId))
+                    {
+                        query = query.Where(g => g.UserId == userId);
+                    }
+                    else
+                    {
+                        query = query.Where(g => g.User.UserName.Contains(searchTerm));
+                    }
+                }
+
+                // 遊戲結果篩選
+                if (!string.IsNullOrEmpty(result))
+                {
+                    query = query.Where(g => g.Result == result);
+                }
+
+                // 排序
+                query = sortBy switch
+                {
+                    "points" => query.OrderByDescending(g => g.PointsGained),
+                    "exp" => query.OrderByDescending(g => g.ExpGained),
+                    "duration" => query.OrderByDescending(g => g.EndTime - g.StartTime),
+                    _ => query.OrderByDescending(g => g.StartTime)
+                };
+
+                // 分頁
+                var totalCount = await query.CountAsync();
+                var gameRecords = await query
+                    .Skip((page - 1) * pageSize)
+                    .Take(pageSize)
+                    .Select(g => new GameRecordViewModel
+                    {
+                        PlayId = g.PlayId,
+                        UserId = g.UserId,
+                        UserName = g.User.UserName,
+                        StartTime = g.StartTime,
+                        EndTime = g.EndTime,
+                        Result = g.Result,
+                        PointsGained = g.PointsGained,
+                        ExpGained = g.ExpGained,
+                        Level = g.Level
+                    })
+                    .ToListAsync();
+
+                var model = new GameRecordsQueryViewModel
+                {
+                    SearchTerm = searchTerm,
+                    Result = result,
+                    SortBy = sortBy,
+                    Page = page,
+                    PageSize = pageSize,
+                    TotalCount = totalCount,
+                    Records = gameRecords
+                };
+
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = $"載入遊戲紀錄時發生錯誤：{ex.Message}";
+                return View(new GameRecordsQueryViewModel());
+            }
+        }
 
         private bool MiniGameExists(int id)
         {
