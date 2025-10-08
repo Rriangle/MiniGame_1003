@@ -657,7 +657,7 @@ namespace GameSpace.Areas.MiniGame.Controllers
                 var backgroundOptions = await _context.PetBackgroundOptions
                     .AsNoTracking()
                     .Where(b => b.IsActive)
-                    .OrderBy(b => b.DisplayOrder)
+                    .OrderBy(b => b.SortOrder)
                     .ToListAsync();
 
                 // 獲取寵物換色所需點數設定
@@ -723,7 +723,7 @@ namespace GameSpace.Areas.MiniGame.Controllers
                 var backgroundOptions = await _context.PetBackgroundOptions
                     .AsNoTracking()
                     .Where(b => b.IsActive)
-                    .OrderBy(b => b.DisplayOrder)
+                    .OrderBy(b => b.SortOrder)
                     .ToListAsync();
 
                 var model = new PetIndividualSettingsViewModel
@@ -795,12 +795,12 @@ namespace GameSpace.Areas.MiniGame.Controllers
                         Level = p.Level,
                         Experience = p.Experience,
                         SkinColor = p.SkinColor,
-                        Background = p.Background,
-                        Happiness = p.Happiness,
+                        Background = p.BackgroundColor,
+                        Happiness = p.Mood,
                         Health = p.Health,
                         Hunger = p.Hunger,
-                        Energy = p.Energy,
-                        Intelligence = p.Intelligence
+                        Energy = p.Stamina,
+                        Intelligence = p.Cleanliness
                     })
                     .ToListAsync();
 
@@ -868,7 +868,7 @@ namespace GameSpace.Areas.MiniGame.Controllers
                         UserName = h.User.UserName,
                         ChangeType = h.ChangeType,
                         ChangeTime = h.ChangeTime,
-                        PointsChange = h.PointsChange,
+                        PointsChange = h.PointsChanged,
                         Description = h.Description
                     })
                     .ToListAsync();

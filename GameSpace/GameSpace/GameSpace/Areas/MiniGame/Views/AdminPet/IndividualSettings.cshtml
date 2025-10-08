@@ -1,286 +1,79 @@
-@model GameSpace.Areas.MiniGame.Models.ViewModels.PetIndividualSettingsModel
+@model GameSpace.Areas.MiniGame.Models.ViewModels.PetIndividualSettingsViewModel
 @{
-    ViewData["Title"] = "�|���ӧO�d���]�w";
-    Layout = "~/Areas/MiniGame/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "會員個別寵物設定";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 @await Html.PartialAsync("_MiniGameAdminTabs")
 
 <div class="container-fluid">
-    <!-- Page Heading -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800">�|���ӧO�d���]�w</h1>
+        <h1 class="h3 mb-0 text-gray-800">會員個別寵物設定</h1>
     </div>
 
-    <!-- �j�M���� -->
     <div class="card shadow mb-4">
         <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary">�j�M�d��</h6>
+            <h6 class="m-0 font-weight-bold text-primary">寵物資料</h6>
         </div>
         <div class="card-body">
-            <form method="get" id="searchForm">
-                <div class="row">
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <label for="userId">�Τ�ID</label>
-                            <input type="text" class="form-control" id="userId" name="userId" placeholder="��J�Τ�ID">
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <label for="petName">�d���W��</label>
-                            <input type="text" class="form-control" id="petName" name="petName" placeholder="��J�d���W��">
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <label for="petId">�d��ID</label>
-                            <input type="text" class="form-control" id="petId" name="petId" placeholder="��J�d��ID">
-                        </div>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-search"></i> �j�M
-                    </button>
-                    <button type="button" class="btn btn-secondary" onclick="resetForm()">
-                        <i class="fas fa-undo"></i> ���m
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- �d���C�� -->
-    <div class="card shadow mb-4">
-        <div class="card-header py-3 d-flex justify-content-between align-items-center">
-            <h6 class="m-0 font-weight-bold text-primary">�d���C��</h6>
-            <span class="badge badge-info" id="resultCount">�@ 0 ���d��</span>
-        </div>
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-bordered" width="100%" cellspacing="0">
-                    <thead>
-                        <tr>
-                            <th>�d��ID</th>
-                            <th>�Τ�ID</th>
-                            <th>�d���W��</th>
-                            <th>����</th>
-                            <th>�g���</th>
-                            <th>����</th>
-                            <th>�I��</th>
-                            <th>���A</th>
-                            <th>�ާ@</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @if (Model != null && Model.Pets != null && Model.Pets.Any())
-                        {
-                            @foreach (var pet in Model.Pets)
-                            {
-                                <tr>
-                                    <td>@pet.Id</td>
-                                    <td>@pet.UserId</td>
-                                    <td>@pet.Name</td>
-                                    <td>
-                                        <span class="badge badge-primary">@pet.Level</span>
-                                    </td>
-                                    <td>@pet.Experience</td>
-                                    <td>
-                                        <span class="badge badge-info" style="background-color: @pet.SkinColor;">@pet.SkinColor</span>
-                                    </td>
-                                    <td>@pet.Background</td>
-                                    <td>
-                                        @if (pet.IsActive)
-                                        {
-                                            <span class="badge badge-success">���D</span>
-                                        }
-                                        else
-                                        {
-                                            <span class="badge badge-secondary">�D���D</span>
-                                        }
-                                    </td>
-                                    <td>
-                                        <button class="btn btn-sm btn-warning" onclick="editPet(@pet.Id)">
-                                            <i class="fas fa-edit"></i> �s��
-                                        </button>
-                                        <button class="btn btn-sm btn-info" onclick="viewPetDetails(@pet.Id)">
-                                            <i class="fas fa-eye"></i> �Ա�
-                                        </button>
-                                    </td>
-                                </tr>
-                            }
-                        }
-                        else
-                        {
-                            <tr>
-                                <td colspan="9" class="text-center">�п�J�j�M����i��d��</td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- �s���d���ҺA�� -->
-<div class="modal fade" id="editPetModal" tabindex="-1" role="dialog" aria-labelledby="editPetModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="editPetModalLabel">�s���d���]�w</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form id="editPetForm">
-                    <input type="hidden" id="editPetId" name="petId">
-                    
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="editPetName">�d���W�� *</label>
-                                <input type="text" class="form-control" id="editPetName" name="petName" required>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="editPetLevel">���� *</label>
-                                <input type="number" class="form-control" id="editPetLevel" name="level" min="1" max="100" required>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="editPetExperience">�g��� *</label>
-                                <input type="number" class="form-control" id="editPetExperience" name="experience" min="0" required>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="editPetSkinColor">���� *</label>
-                                <select class="form-control" id="editPetSkinColor" name="skinColor" required>
-                                    <option value="">�п�ܽ���</option>
-                                    <option value="����">����</option>
-                                    <option value="�Ŧ�">�Ŧ�</option>
-                                    <option value="���">���</option>
-                                    <option value="����">����</option>
-                                    <option value="����">����</option>
-                                    <option value="����">����</option>
-                                    <option value="����">����</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="editPetBackground">�I�� *</label>
-                                <select class="form-control" id="editPetBackground" name="background" required>
-                                    <option value="">�п�ܭI��</option>
-                                    <option value="�˪L">�˪L</option>
-                                    <option value="����">����</option>
-                                    <option value="����">����</option>
-                                    <option value="�Ӫ�">�Ӫ�</option>
-                                    <option value="���">���</option>
-                                    <option value="���s">���s</option>
-                                    <option value="�F�z">�F�z</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="editPetStatus">���A</label>
-                                <select class="form-control" id="editPetStatus" name="isActive">
-                                    <option value="true">���D</option>
-                                    <option value="false">�D���D</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-
+            <div class="row">
+                <div class="col-md-6">
                     <div class="form-group">
-                        <label for="editPetDescription">�y�z</label>
-                        <textarea class="form-control" id="editPetDescription" name="description" rows="3"></textarea>
+                        <label>寵物 ID</label>
+                        <input type="text" class="form-control" value="@Model.PetId" readonly />
                     </div>
-                </form>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>會員 ID</label>
+                        <input type="text" class="form-control" value="@Model.UserId" readonly />
+                    </div>
+                </div>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">����</button>
-                <button type="button" class="btn btn-primary" onclick="savePetChanges()">�x�s�ܧ�</button>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>會員名稱</label>
+                        <input type="text" class="form-control" value="@Model.UserName" readonly />
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>寵物名稱</label>
+                        <input type="text" class="form-control" name="petName" value="@Model.PetName" />
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>目前膚色</label>
+                        <select class="form-control" name="skinColor">
+                            @foreach (var option in Model.ColorOptions)
+                            {
+                                <option value="@option.ColorCode" selected="@(option.ColorCode == Model.CurrentSkinColor)">@option.ColorName</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>目前背景</label>
+                        <select class="form-control" name="background">
+                            @foreach (var option in Model.BackgroundOptions)
+                            {
+                                <option value="@option.BackgroundCode" selected="@(option.BackgroundCode == Model.CurrentBackground)">@option.BackgroundName</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <button type="submit" class="btn btn-primary">儲存變更</button>
+                    <a href="@Url.Action("QueryPets", "AdminPet")" class="btn btn-secondary">返回列表</a>
+                </div>
             </div>
         </div>
     </div>
 </div>
-
-<script>
-function resetForm() {
-    document.getElementById("searchForm").reset();
-}
-
-function editPet(petId) {
-    // ���J�d����ƨ���ܽs��ҺA��
-    document.getElementById("editPetId").value = petId;
-    document.getElementById("editPetName").value = "���J��...";
-    document.getElementById("editPetLevel").value = "5";
-    document.getElementById("editPetExperience").value = "250";
-    document.getElementById("editPetSkinColor").value = "�Ŧ�";
-    document.getElementById("editPetBackground").value = "�˪L";
-    document.getElementById("editPetStatus").value = "true";
-    document.getElementById("editPetDescription").value = "���J��...";
-    
-    $("#editPetModal").modal("show");
-}
-
-function viewPetDetails(petId) {
-    // �d���d���Ա�
-    alert("�d���d���Ա�: " + petId);
-}
-
-function savePetChanges() {
-    const petId = document.getElementById("editPetId").value;
-    const petName = document.getElementById("editPetName").value;
-    const level = document.getElementById("editPetLevel").value;
-    const experience = document.getElementById("editPetExperience").value;
-    const skinColor = document.getElementById("editPetSkinColor").value;
-    const background = document.getElementById("editPetBackground").value;
-    const isActive = document.getElementById("editPetStatus").value;
-    const description = document.getElementById("editPetDescription").value;
-
-    if (!petName || !level || !experience || !skinColor || !background) {
-        alert("�ж�g�Ҧ��������");
-        return;
-    }
-
-    if (!confirm(`�T�w�n�x�s�d�� ${petName} ���ܧ�ܡH`)) {
-        return;
-    }
-
-    // �o�e AJAX �ШD�����x�s�ܧ�
-    alert("�d���]�w�w�x�s");
-    $("#editPetModal").modal("hide");
-    
-    // ���s���J�����Χ�s����
-    location.reload();
-}
-
-// ��s���G�p��
-function updateResultCount() {
-    const rows = document.querySelectorAll("tbody tr");
-    const count = rows.length - (rows.length > 0 && rows[0].cells[0].textContent.includes("�п�J") ? 1 : 0);
-    document.getElementById("resultCount").textContent = `�@ ${count} ���d��`;
-}
-
-// �������J�ɰ���
-document.addEventListener("DOMContentLoaded", function() {
-    updateResultCount();
-});
-</script>
-
-
-
